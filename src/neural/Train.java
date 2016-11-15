@@ -24,7 +24,7 @@ public class Train {
 
     public void trainAll() {  	
     	for(int i = 0; i < arrayABC.length; i++) {   		    		
-    		train(10000, arrayABC[i]);
+    		train(1000, arrayABC[i]);
     	}
     }
     
@@ -39,9 +39,18 @@ public class Train {
         ReadWriteFile.saveBiasWeight(network.getNeurons());
     }
     
+    public int getNumbOfInputsLetter(String letter) {
+        ArrayList<TrainingSet> set = trainingSets.get(arrayIndexs.indexOf(letter));
+    	return set.size();
+    }
+    
+    public ArrayList<Integer> getInputFromLetter(String letter, int index) {
+    	TrainingSet set = trainingSets.get(arrayIndexs.indexOf(letter)).get(index);
+    	return set.getInputs();
+    }
+    
     public ArrayList<Integer> getRandomInputFromLetter(String letter) {
         int index = ((int) (Math.random() * trainingSets.get(arrayIndexs.indexOf(letter)).size()));       
-        if(index == 0) { index++; }
         TrainingSet set = trainingSets.get(arrayIndexs.indexOf(letter)).get(index);
     	return set.getInputs();
     }

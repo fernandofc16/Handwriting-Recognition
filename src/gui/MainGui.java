@@ -22,7 +22,6 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import data.GoodOutputs;
-import data.GoodPixels;
 import data.ReadWriteFile;
 import neural.Train;
 import neural.TrainingSet;
@@ -31,13 +30,13 @@ public class MainGui extends JFrame {
 
 	private static final long serialVersionUID = 1163083359000321124L;
 
-	private final int RESOLUTION = 20;
+	private final int RESOLUTION = 50;
 
     private Train networkTrainer;
 
     private JPanel mainPanel;
     private DrawingPanel drawingPanel;
-    private CustomPanel resultPanel;
+    private ResultPanel resultPanel;
 
     private JButton clearButton;
     private JButton recognizeResultButton;
@@ -51,6 +50,8 @@ public class MainGui extends JFrame {
     
     private JLabel inputLabel;
     private JLabel outputLabel;
+    
+	private String[] arrayABC = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     
     public static void main(String[] args) {
     	new MainGui();
@@ -112,7 +113,7 @@ public class MainGui extends JFrame {
         outputLabel = new JLabel("OUTPUT:");
         outputLabel.setFont(new Font("Arial", 20, 30));
 
-        resultPanel = new CustomPanel(400, 400, RESOLUTION);
+        resultPanel = new ResultPanel(400, 400);
 
         panel.add(outputLabel);
         panel.add(resultPanel);
@@ -150,7 +151,7 @@ public class MainGui extends JFrame {
 
         trainNetworkButton = new JButton("Train X times:");
 
-        trainingAmountTextField = new JFormattedTextField("5000");
+        trainingAmountTextField = new JFormattedTextField("1000");
         trainingAmountTextField.setMaximumSize(new Dimension(100, 30));
         trainingAmountTextField.setPreferredSize(new Dimension(100, 30));
         trainingAmountTextField.setHorizontalAlignment(JTextField.CENTER);
@@ -199,9 +200,9 @@ public class MainGui extends JFrame {
 
         if(index <= 25) {
         	trainAsComboBox.setSelectedIndex(index);
-            resultPanel.drawLetter(GoodPixels.getInstance().getGoodPixels(index));
+        	resultPanel.setBackgroundResult(arrayABC[index]);
         } else {
-        	resultPanel.clear();
+        	resultPanel.setBackgroundResult("blank");
         }
         return index;
     }
@@ -212,82 +213,107 @@ public class MainGui extends JFrame {
     		new Thread(new Runnable(){
     			public void run() {
     				int correctRecognitions = 0;
-    				for(int k = 0; k < 1000; k++) {
-    				String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
+    				int totalTrys = 0;
+    				//for(int k = 0; k < 1000; k++) {
     	    		
     	    		boolean wrong = false;
-    	    		for(int i = 0; i < 26; i++) {   
-    	    			//for(int j = 0; j < 3; j++) {
-	    	                drawingPanel.drawLetter(networkTrainer.getRandomInputFromLetter(letters[i]));
+    	    		for(int i = 0; i < 26; i++) {
+    	    			int size = networkTrainer.getNumbOfInputsLetter(arrayABC[i]);
+    	    			for(int j = 0; j < size; j++) {
+	    	                drawingPanel.drawLetter(networkTrainer.getInputFromLetter(arrayABC[i], j));
 	    	                int index = transformFunction();
 	    	                try {
-	    	                	//Thread.sleep(500);
+	    	                	Thread.sleep(100);
 	    					} catch (Exception e2) {
 	    					}
 	    	                if(index == i) {
-	    	                	resultPanel.setCustomizedColor(Color.GREEN);
+	    	                	//resultPanel.setCustomizedColor(Color.GREEN);
+	    	                	resultPanel.setBackground(Color.GREEN);
 	    	                	correctRecognitions++;
 	    	                	wrong = false;
 	    	                } else {
-	    	                	resultPanel.setCustomizedColor(Color.RED);
+	    	                	//resultPanel.setCustomizedColor(Color.RED);
+	    	                	resultPanel.setBackground(Color.RED);
 	    	                	wrong = true;
 	    	                }
-	    	                resultPanel.drawLetter(GoodPixels.getInstance().getGoodPixels(index));
+	    	                //resultPanel.setBackgroundResult(arrayABC[i]);
+	    	                totalTrys++;
 	    	                try {
-	    	                	//Thread.sleep(500);
+	    	                	Thread.sleep(100);
 	    					} catch (Exception e2) {
 	    					}
 	    	                if(wrong) {
 	    	                	testAllLettersButton.setText("Training Wrong Letter");
 	    	                	testAllLettersButton.setForeground(Color.RED);
-	    	                	networkTrainer.train(5000, letters[i]);
+	    	                	networkTrainer.train(1000, arrayABC[i]);
 	    	                	testAllLettersButton.setForeground(Color.BLACK);
 	    	                	testAllLettersButton.setText("Test All Letters");
 	    	                }
-	    	                resultPanel.setCustomizedColor(Color.BLACK);
+	    	                //resultPanel.setCustomizedColor(Color.BLACK);
+	    	                resultPanel.setBackground(Color.WHITE);
     	    			}
     	        	}
     	    		
     	    		//JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of 78 letters"));
     	    		drawingPanel.clear();
-    	    		resultPanel.clear();
+    	    		resultPanel.setBackgroundResult("blank");
     				//}
-    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of 26000 letters"));
+    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));
     			}
     		}).start();
     		
     	});
     	
     	trainAllLettersButton.addActionListener(e -> {
-    		trainAllLettersButton.setText("Training...");
-    		trainAllLettersButton.setForeground(Color.RED);
-    		this.setEnabled(false);
-    		JOptionPane.showMessageDialog(this, "The training of all letters will start\n" + "This might take a while, please wait...");
-    		networkTrainer.trainAll();
-    		this.setEnabled(true);
-    		trainAllLettersButton.setForeground(Color.BLACK);
-    		trainAllLettersButton.setText("Train All Letters");
-    		JOptionPane.showMessageDialog(this, "Train completed");
+    		new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					trainAllLettersButton.setText("Training All...");
+		    		trainAllLettersButton.setForeground(Color.RED);
+		    		setEnabled(false);
+		    		networkTrainer.trainAll();
+		    		setEnabled(true);
+		    		trainAllLettersButton.setForeground(Color.BLACK);
+		    		trainAllLettersButton.setText("Train All Letters");
+				}
+			}).start(); 		
     	});
     	
         clearButton.addActionListener(e -> {
         	drawingPanel.clear();
-        	resultPanel.clear();
+        	resultPanel.setBackgroundResult("blank");
         });
 
         trainNetworkButton.addActionListener(e -> {
-            String letter = (String) trainAsComboBox.getSelectedItem();
-            networkTrainer.addTrainingSet(new TrainingSet(drawingPanel.getPixels(), GoodOutputs.getInstance().getGoodOutput(letter)), letter);
-            ReadWriteFile.saveToFile(drawingPanel.getPixels(), letter);
             
-            int number = 0;
-            try {
-                number = Integer.parseInt(trainingAmountTextField.getText());
-            } catch (Exception x) {
-                JOptionPane.showMessageDialog(this, "Wrong input", "ERROR", JOptionPane.PLAIN_MESSAGE);
-            }
+        	new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					setEnabled(false);
 
-            networkTrainer.train(number, letter);
+					trainNetworkButton.setText("Training...");
+		        	trainNetworkButton.setForeground(Color.RED);
+		            String letter = (String) trainAsComboBox.getSelectedItem();
+		            networkTrainer.addTrainingSet(new TrainingSet(drawingPanel.getPixels(), GoodOutputs.getInstance().getGoodOutput(letter)), letter);
+		            ReadWriteFile.saveToFile(drawingPanel.getPixels(), letter);
+		            
+		            int number = 0;
+		            try {
+		                number = Integer.parseInt(trainingAmountTextField.getText());
+		            } catch (Exception x) {
+		            }
+
+		            networkTrainer.train(number, letter);
+		            resultPanel.setBackgroundResult(arrayABC[transformFunction()]);
+		            trainNetworkButton.setText("Train X times:");
+		            trainNetworkButton.setForeground(Color.BLACK);	        
+		            setEnabled(true);
+				}
+			
+        	}).start();
+        	
         });
 
         recognizeResultButton.addActionListener(e -> {
@@ -303,10 +329,8 @@ public class MainGui extends JFrame {
             int letterValue = i + 65;
             sb.append((char) letterValue);
             double value = outputs.get(i);
-            if (value < 0.01)
-                value = 0;
-            if (value > 0.99)
-                value = 1;
+            //if (value < 0.01) { value = 0; }
+            if (value > 0.99) { value = 1; }
 
             value *= 1000;
             int x = (int) (value);

@@ -21,6 +21,7 @@ public class ReadWriteFile {
 	private static File temporaryFileABC;
 	private static File biasValues = new File(directory, "biasValues.txt");
 	private static File weightValues = new File(directory, "weightValues.txt");
+	private static File goodPixels = new File(directory, "goodPixels.txt");
 	private static String[] arrayABC = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
 	
 	public static void createDirectoryAndFiles() throws IOException {
@@ -34,6 +35,10 @@ public class ReadWriteFile {
 		
 		if(!weightValues.exists()) {
 			weightValues.createNewFile();
+		}
+		
+		if(!goodPixels.exists()) {
+			goodPixels.createNewFile();
 		}
 		
 		for(int i = 0; i < arrayABC.length; i++) {

@@ -53,9 +53,9 @@ public class Neuron {
 
     public void adjustWeights(double delta) {
         for (int i = 0; i < inputs.size(); i++) {
-            double d = weights.get(i);
-            d += LEARNING_RATIO * delta * inputs.get(i);
-            weights.set(i, d);
+            double newWeight = weights.get(i);
+            newWeight += LEARNING_RATIO * delta * inputs.get(i);
+            weights.set(i, newWeight);
         }
 
         biasWeight += LEARNING_RATIO * delta * BIAS;
