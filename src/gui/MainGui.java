@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -209,116 +211,141 @@ public class MainGui extends JFrame {
     
     private void setOnClicks() {      	
     	
-    	testAllLettersButton.addActionListener(e -> {
-    		new Thread(new Runnable(){
-    			public void run() {
-    				int correctRecognitions = 0;
-    				int totalTrys = 0;
-    				//for(int k = 0; k < 1000; k++) {
-    	    		
-    	    		boolean wrong = false;
-    	    		for(int i = 0; i < 26; i++) {
-    	    			int size = networkTrainer.getNumbOfInputsLetter(arrayABC[i]);
-    	    			for(int j = 0; j < size; j++) {
-	    	                drawingPanel.drawLetter(networkTrainer.getInputFromLetter(arrayABC[i], j));
-	    	                int index = transformFunction();
-	    	                try {
-	    	                	Thread.sleep(100);
-	    					} catch (Exception e2) {
-	    					}
-	    	                if(index == i) {
-	    	                	//resultPanel.setCustomizedColor(Color.GREEN);
-	    	                	resultPanel.setBackground(Color.GREEN);
-	    	                	correctRecognitions++;
-	    	                	wrong = false;
-	    	                } else {
-	    	                	//resultPanel.setCustomizedColor(Color.RED);
-	    	                	resultPanel.setBackground(Color.RED);
-	    	                	wrong = true;
-	    	                }
-	    	                //resultPanel.setBackgroundResult(arrayABC[i]);
-	    	                totalTrys++;
-	    	                try {
-	    	                	Thread.sleep(100);
-	    					} catch (Exception e2) {
-	    					}
-	    	                if(wrong) {
-	    	                	testAllLettersButton.setText("Training Wrong Letter");
-	    	                	testAllLettersButton.setForeground(Color.RED);
-	    	                	networkTrainer.train(1000, arrayABC[i]);
-	    	                	testAllLettersButton.setForeground(Color.BLACK);
-	    	                	testAllLettersButton.setText("Test All Letters");
-	    	                }
-	    	                //resultPanel.setCustomizedColor(Color.BLACK);
-	    	                resultPanel.setBackground(Color.WHITE);
-    	    			}
-    	        	}
-    	    		
-    	    		//JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of 78 letters"));
-    	    		drawingPanel.clear();
-    	    		resultPanel.setBackgroundResult("blank");
-    				//}
-    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));
-    			}
-    		}).start();
-    		
-    	});
-    	
-    	trainAllLettersButton.addActionListener(e -> {
-    		new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					trainAllLettersButton.setText("Training All...");
-		    		trainAllLettersButton.setForeground(Color.RED);
-		    		setEnabled(false);
-		    		networkTrainer.trainAll();
-		    		setEnabled(true);
-		    		trainAllLettersButton.setForeground(Color.BLACK);
-		    		trainAllLettersButton.setText("Train All Letters");
-				}
-			}).start(); 		
-    	});
-    	
-        clearButton.addActionListener(e -> {
-        	drawingPanel.clear();
-        	resultPanel.setBackgroundResult("blank");
-        });
-
-        trainNetworkButton.addActionListener(e -> {
-            
-        	new Thread(new Runnable() {
-				
-				@Override
-				public void run() {
-					setEnabled(false);
-
-					trainNetworkButton.setText("Training...");
-		        	trainNetworkButton.setForeground(Color.RED);
-		            String letter = (String) trainAsComboBox.getSelectedItem();
-		            networkTrainer.addTrainingSet(new TrainingSet(drawingPanel.getPixels(), GoodOutputs.getInstance().getGoodOutput(letter)), letter);
-		            ReadWriteFile.saveToFile(drawingPanel.getPixels(), letter);
-		            
-		            int number = 0;
-		            try {
-		                number = Integer.parseInt(trainingAmountTextField.getText());
-		            } catch (Exception x) {
-		            }
-
-		            networkTrainer.train(number, letter);
-		            resultPanel.setBackgroundResult(arrayABC[transformFunction()]);
-		            trainNetworkButton.setText("Train X times:");
-		            trainNetworkButton.setForeground(Color.BLACK);	        
-		            setEnabled(true);
-				}
+    	testAllLettersButton.addActionListener(new ActionListener() {
 			
-        	}).start();
-        	
-        });
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
 
-        recognizeResultButton.addActionListener(e -> {
-        	transformFunction();
-        });
+	    		new Thread(new Runnable(){
+	    			public void run() {
+	    				int correctRecognitions = 0;
+	    				int totalTrys = 0;
+	    				//for(int k = 0; k < 1000; k++) {
+	    	    		
+	    	    		boolean wrong = false;
+	    	    		for(int i = 0; i < 26; i++) {
+	    	    			int size = networkTrainer.getNumbOfInputsLetter(arrayABC[i]);
+	    	    			for(int j = 0; j < size; j++) {
+		    	                drawingPanel.drawLetter(networkTrainer.getInputFromLetter(arrayABC[i], j));
+		    	                int index = transformFunction();
+		    	                try {
+		    	                	Thread.sleep(100);
+		    					} catch (Exception e2) {
+		    					}
+		    	                if(index == i) {
+		    	                	//resultPanel.setCustomizedColor(Color.GREEN);
+		    	                	resultPanel.setBackground(Color.GREEN);
+		    	                	correctRecognitions++;
+		    	                	wrong = false;
+		    	                } else {
+		    	                	//resultPanel.setCustomizedColor(Color.RED);
+		    	                	resultPanel.setBackground(Color.RED);
+		    	                	wrong = true;
+		    	                }
+		    	                //resultPanel.setBackgroundResult(arrayABC[i]);
+		    	                totalTrys++;
+		    	                try {
+		    	                	Thread.sleep(100);
+		    					} catch (Exception e2) {
+		    					}
+		    	                if(wrong) {
+		    	                	testAllLettersButton.setText("Training Wrong Letter");
+		    	                	testAllLettersButton.setForeground(Color.RED);
+		    	                	networkTrainer.train(1000, arrayABC[i]);
+		    	                	testAllLettersButton.setForeground(Color.BLACK);
+		    	                	testAllLettersButton.setText("Test All Letters");
+		    	                }
+		    	                //resultPanel.setCustomizedColor(Color.BLACK);
+		    	                resultPanel.setBackground(Color.WHITE);
+	    	    			}
+	    	        	}
+	    	    		
+	    	    		//JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of 78 letters"));
+	    	    		drawingPanel.clear();
+	    	    		resultPanel.setBackgroundResult("blank");
+	    				//}
+	    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));
+	    			}
+	    		}).start();
+			}
+		});
+    	
+    	trainAllLettersButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						trainAllLettersButton.setText("Training All...");
+			    		trainAllLettersButton.setForeground(Color.RED);
+			    		setEnabled(false);
+			    		networkTrainer.trainAll();
+			    		setEnabled(true);
+			    		trainAllLettersButton.setForeground(Color.BLACK);
+			    		trainAllLettersButton.setText("Train All Letters");
+					}
+				}).start();
+			}
+		});
+    	
+        clearButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub				
+	        	drawingPanel.clear();
+	        	resultPanel.setBackgroundResult("blank");
+			}
+		});
+
+        trainNetworkButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+
+	        	new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						setEnabled(false);
+
+						trainNetworkButton.setText("Training...");
+			        	trainNetworkButton.setForeground(Color.RED);
+			            String letter = (String) trainAsComboBox.getSelectedItem();
+			            networkTrainer.addTrainingSet(new TrainingSet(drawingPanel.getPixels(), GoodOutputs.getInstance().getGoodOutput(letter)), letter);
+			            ReadWriteFile.saveToFile(drawingPanel.getPixels(), letter);
+			            
+			            int number = 0;
+			            try {
+			                number = Integer.parseInt(trainingAmountTextField.getText());
+			            } catch (Exception x) {
+			            }
+
+			            networkTrainer.train(number, letter);
+			            resultPanel.setBackgroundResult(arrayABC[transformFunction()]);
+			            trainNetworkButton.setText("Train X times:");
+			            trainNetworkButton.setForeground(Color.BLACK);	        
+			            setEnabled(true);
+					}
+				
+	        	}).start();
+
+			}
+		});
+
+        recognizeResultButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				transformFunction();
+			}
+		});
 
     }
 
