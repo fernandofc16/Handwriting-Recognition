@@ -17,7 +17,8 @@ import neural.TrainingSet;
 
 public class ReadWriteFile {
 
-	private static File directory = new File("C:/Hand_Reco/");
+	//private static File directory = new File("C:/Hand_Reco/");
+	private static File directory = new File("C:/Users/31728499/Desktop/workspace/Handwriting-Recognition/Hand_Reco");
 	private static File temporaryFileABC;
 	private static File biasValues = new File(directory, "biasValues.txt");
 	private static File weightValues = new File(directory, "weightValues.txt");
@@ -55,7 +56,7 @@ public class ReadWriteFile {
         for (int i = 0; i < 26; i++) {
             char letterValue = (char) (i + 65);
             String letter = String.valueOf(letterValue);
-            String fileABCPath = "C:/Hand_Reco/" + letter + ".txt";
+            String fileABCPath = directory + "/" + letter + ".txt";
             ArrayList<TrainingSet> listSets = new ArrayList<>();
             for (ArrayList<Integer> list : readFromFile(fileABCPath)) {
             	listSets.add(new TrainingSet(list, GoodOutputs.getInstance().getGoodOutput(letter)));
@@ -99,7 +100,7 @@ public class ReadWriteFile {
     	String[] letters = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     	for(int i = 0; i < 26; i++) {
 	    	try {
-	            InputStream in = new FileInputStream("C:/Hand_Reco/" + letters[i] + ".txt");
+	            InputStream in = new FileInputStream(directory + "/" + letters[i] + ".txt");
 	            
 	            BufferedReader reader = new BufferedReader(new InputStreamReader(in));
 	            
@@ -118,7 +119,7 @@ public class ReadWriteFile {
 
     public static void saveToFile(ArrayList<Integer> input, String filename) {
         try {
-            File file = new File("C:/Hand_Reco/" + filename + ".txt");
+            File file = new File(directory + "/" + filename + ".txt");
             PrintWriter pw = new PrintWriter(new FileOutputStream(file, true));
             for (Integer i : input) {
                 pw.write(Integer.toString(i));
@@ -132,7 +133,7 @@ public class ReadWriteFile {
     
     public static void saveWeigths(ArrayList<Neuron> neurons) {
         try {
-            File file = new File("C:/Hand_Reco/weightValues.txt");
+            File file = new File(directory + "/weightValues.txt");
             PrintWriter pw = new PrintWriter(new FileOutputStream(file));
             for (Neuron neuron : neurons) {
             	for (Double weight : neuron.getWeights()) {
@@ -148,7 +149,7 @@ public class ReadWriteFile {
     
     public static void saveBiasWeight(ArrayList<Neuron> neurons) {
         try {
-            File file = new File("C:/Hand_Reco/biasValues.txt");
+            File file = new File(directory + "/biasValues.txt");
             PrintWriter pw = new PrintWriter(new FileOutputStream(file));
             for (Neuron neuron : neurons) {
             	pw.write(neuron.getBiasWeight() + "\n");
@@ -164,7 +165,7 @@ public class ReadWriteFile {
     	ArrayList<Neuron> neuronsRestored = new ArrayList<>();
     	ArrayList<Double> biasWeights = new ArrayList<>();
     	try {
-            InputStream in = new FileInputStream(new File("C:/Hand_Reco/biasValues.txt"));
+            InputStream in = new FileInputStream(new File(directory + "/biasValues.txt"));
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -176,7 +177,7 @@ public class ReadWriteFile {
         }
     	
     	try {
-            InputStream in = new FileInputStream(new File("C:/Hand_Reco/weightValues.txt"));
+            InputStream in = new FileInputStream(new File(directory + "/weightValues.txt"));
             BufferedReader reader = new BufferedReader(new InputStreamReader(in));
             String line;
             int index = 0;
