@@ -48,6 +48,7 @@ public class MainGui extends JFrame {
     
     private JTextField trainingAmountTextField;
     private JComboBox<String> trainAsComboBox;
+    private JComboBox<String> testAllComboBox;
     private JTextArea outputTextArea;
     
     private JLabel inputLabel;
@@ -75,7 +76,7 @@ public class MainGui extends JFrame {
         setCenterArea();
         setRightSide();
         setOutputPanel();
-
+        
         setOnClicks();
         
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -126,7 +127,7 @@ public class MainGui extends JFrame {
     private void setCenterArea() {
         JPanel centerPanel = new JPanel();
         centerPanel.setLayout(new GridBagLayout());
-        centerPanel.setPreferredSize(new Dimension(200, 400));
+        centerPanel.setPreferredSize(new Dimension(200, 450));
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.CENTER;
@@ -134,6 +135,10 @@ public class MainGui extends JFrame {
         testAllLettersButton = new JButton("Test All Letters");
         //testAllLetters.setEnabled(false);
         centerPanel.add(testAllLettersButton, gbc);
+        
+        testAllComboBox = new JComboBox<>(new String[]{"0", "10", "50", "100"});
+        testAllComboBox.setAlignmentX(CENTER_ALIGNMENT);
+        centerPanel.add(testAllComboBox, gbc);
 
         centerPanel.add(Box.createVerticalStrut(30), gbc);
         
@@ -216,9 +221,12 @@ public class MainGui extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
+				
+				int speedTest = Integer.parseInt(testAllComboBox.getSelectedItem().toString());
 
 	    		new Thread(new Runnable(){
 	    			public void run() {
+	    				deactivateJFrame();
 	    				int correctRecognitions = 0;
 	    				int totalTrys = 0;
 	    				//for(int k = 0; k < 1000; k++) {
@@ -230,7 +238,7 @@ public class MainGui extends JFrame {
 		    	                drawingPanel.drawLetter(networkTrainer.getInputFromLetter(arrayABC[i], j));
 		    	                int index = transformFunction();
 		    	                try {
-		    	                	Thread.sleep(100);
+		    	                	Thread.sleep(speedTest);
 		    					} catch (Exception e2) {
 		    					}
 		    	                if(index == i) {
@@ -246,7 +254,7 @@ public class MainGui extends JFrame {
 		    	                //resultPanel.setBackgroundResult(arrayABC[i]);
 		    	                totalTrys++;
 		    	                try {
-		    	                	Thread.sleep(100);
+		    	                	Thread.sleep(speedTest);
 		    					} catch (Exception e2) {
 		    					}
 		    	                if(wrong) {
@@ -265,7 +273,9 @@ public class MainGui extends JFrame {
 	    	    		drawingPanel.clear();
 	    	    		resultPanel.setBackgroundResult("blank");
 	    				//}
+	    	    		activateJFrame();
 	    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));
+	    	    		
 	    			}
 	    		}).start();
 			}
@@ -280,6 +290,7 @@ public class MainGui extends JFrame {
 					
 					@Override
 					public void run() {
+						deactivateJFrame();
 						trainAllLettersButton.setText("Training All...");
 			    		trainAllLettersButton.setForeground(Color.RED);
 			    		setEnabled(false);
@@ -287,6 +298,7 @@ public class MainGui extends JFrame {
 			    		setEnabled(true);
 			    		trainAllLettersButton.setForeground(Color.BLACK);
 			    		trainAllLettersButton.setText("Train All Letters");
+			    		activateJFrame();
 					}
 				}).start();
 			}
@@ -296,7 +308,7 @@ public class MainGui extends JFrame {
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub				
+				// TODO Auto-generated method stub		
 	        	drawingPanel.clear();
 	        	resultPanel.setBackgroundResult("blank");
 			}
@@ -368,5 +380,13 @@ public class MainGui extends JFrame {
         }
         outputTextArea.setText(sb.toString());
     }
+    
+    private void deactivateJFrame() {
+    	this.setEnabled(false);
+    }
 
+    private void activateJFrame() {
+    	this.setEnabled(true);
+    }
+    
 }
