@@ -17,8 +17,8 @@ import neural.TrainingSet;
 
 public class ReadWriteFile {
 
-	private static File directory = new File("C:/Hand_Reco/");
-	//private static File directory = new File("C:/Users/31728499/Desktop/workspace/Handwriting-Recognition/Hand_Reco");
+	//private static File directory = new File("C:/Hand_Reco/");
+	private static File directory = new File(System.getProperty("user.dir").replace("\\", "/") + "/Hand_Reco/");
 	private static File temporaryFileABC;
 	private static File biasValues = new File(directory, "biasValues.txt");
 	private static File weightValues = new File(directory, "weightValues.txt");
