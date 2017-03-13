@@ -19,6 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
@@ -45,14 +46,17 @@ public class MainGui extends JFrame {
     private JButton trainNetworkButton;
     private JButton trainAllLettersButton;
     private JButton testAllLettersButton;
+    private JButton testLetterButton;
     
     private JTextField trainingAmountTextField;
     private JComboBox<String> trainAsComboBox;
     private JComboBox<String> testAllComboBox;
+    private JComboBox<String> testLetterComboBox;
     private JTextArea outputTextArea;
     
     private JLabel inputLabel;
     private JLabel outputLabel;
+    private JLabel delayTest;
     
 	private String[] arrayABC = new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"};
     
@@ -131,30 +135,44 @@ public class MainGui extends JFrame {
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.CENTER;
-
+        
+        testLetterButton = new JButton("Test Letter:");
+        centerPanel.add(testLetterButton, gbc);
+        
+        testLetterComboBox = new JComboBox<>(arrayABC);
+        testLetterComboBox.setAlignmentX(CENTER_ALIGNMENT);
+        centerPanel.add(testLetterComboBox, gbc);
+        
+        centerPanel.add(Box.createVerticalStrut(30), gbc);
+        
         testAllLettersButton = new JButton("Test All Letters");
-        //testAllLetters.setEnabled(false);
         centerPanel.add(testAllLettersButton, gbc);
+
+        centerPanel.add(Box.createVerticalStrut(10), gbc);
+        
+        delayTest = new JLabel("Delay (ms)");
+        centerPanel.add(delayTest, gbc);
         
         testAllComboBox = new JComboBox<>(new String[]{"0", "10", "50", "100"});
         testAllComboBox.setAlignmentX(CENTER_ALIGNMENT);
         centerPanel.add(testAllComboBox, gbc);
-
-        centerPanel.add(Box.createVerticalStrut(30), gbc);
+        
+        centerPanel.add(new JSeparator(SwingConstants.VERTICAL), gbc);
+        centerPanel.add(Box.createVerticalStrut(20), gbc);
         
         trainAllLettersButton = new JButton("Train All Letters");
         centerPanel.add(trainAllLettersButton, gbc);
         
-        centerPanel.add(Box.createVerticalStrut(30), gbc);
+        centerPanel.add(Box.createVerticalStrut(20), gbc);
                 
         centerPanel.add(new JLabel("Train as:", SwingConstants.CENTER), gbc);
 
-        trainAsComboBox = new JComboBox<>(new String[]{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"});
+        trainAsComboBox = new JComboBox<>(arrayABC);
         trainAsComboBox.setAlignmentX(Component.CENTER_ALIGNMENT);
         trainAsComboBox.setMaximumSize(new Dimension((int) trainAsComboBox.getPreferredSize().getWidth(), 30));
         centerPanel.add(trainAsComboBox, gbc);
 
-        centerPanel.add(Box.createVerticalStrut(50));
+        centerPanel.add(Box.createVerticalStrut(30));
 
         trainNetworkButton = new JButton("Train X times:");
 
@@ -167,12 +185,12 @@ public class MainGui extends JFrame {
         centerPanel.add(trainNetworkButton, gbc);
         centerPanel.add(trainingAmountTextField, gbc);
 
-        centerPanel.add(Box.createVerticalStrut(100));
+        centerPanel.add(Box.createVerticalStrut(70));
 
         recognizeResultButton = new JButton(">>>");
         centerPanel.add(recognizeResultButton, gbc);
 
-        centerPanel.add(Box.createVerticalStrut(50));
+        centerPanel.add(Box.createVerticalStrut(30));
 
         clearButton = new JButton("Clear");
         clearButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -214,7 +232,87 @@ public class MainGui extends JFrame {
         return index;
     }
     
-    private void setOnClicks() {      	
+    private void setOnClicks() {
+    	
+    	testLetterButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				new Thread(new Runnable() {
+					
+					@Override
+					public void run() {
+						// TODO Auto-generated method stub
+						deactivateJFrame();
+						int correctRecognitions = 0;
+	    				int totalTrys = 0;
+	    				
+	    				boolean wrong = false;
+	    	    			
+    	    			testLetterButton.setText("Testing Letter [".concat(testLetterComboBox.getSelectedItem().toString()).concat("]"));
+    	    			testLetterButton.setForeground(Color.BLUE);
+    	    			
+    	    			int size = networkTrainer.getNumbOfInputsLetter(testLetterComboBox.getSelectedItem().toString());
+    	    			for(int j = 0; j < size; j++) {
+    	    				
+    	    				drawingPanel.drawLetter(networkTrainer.getInputFromLetter(testLetterComboBox.getSelectedItem().toString(), j));
+    	    				
+	    	                try {
+	    	                	Thread.sleep(300);
+	    					} catch (Exception e2) {
+	    					}
+	    	                
+	    	                int index = transformFunction();
+	    	                
+	    	                try {
+	    	                	Thread.sleep(300);
+	    					} catch (Exception e2) {
+	    					}
+
+	    	                if(index == testLetterComboBox.getSelectedIndex()) {
+	    	                	//resultPanel.setCustomizedColor(Color.GREEN);
+	    	                	resultPanel.setBackground(Color.GREEN);
+	    	                	correctRecognitions++;
+	    	                	wrong = false;
+	    	                } else {
+	    	                	//resultPanel.setCustomizedColor(Color.RED);
+	    	                	resultPanel.setBackground(Color.RED);
+	    	                	wrong = true;
+	    	                }
+	    	                //resultPanel.setBackgroundResult(arrayABC[i]);
+	    	                totalTrys++;
+	    	                try {
+	    	                	Thread.sleep(500);
+	    					} catch (Exception e2) {
+	    					}
+	    	                if(wrong) {
+	    	                	testLetterButton.setText("Training Wrong Letter");
+	    	                	testLetterButton.setForeground(Color.RED);
+	    	                	networkTrainer.train(1000, testLetterComboBox.getSelectedItem().toString());
+	    	                	testLetterButton.setForeground(Color.BLACK);
+	    	                	testLetterButton.setText("Test Letter:");
+	    	                }
+	    	                //resultPanel.setCustomizedColor(Color.BLACK);
+	    	                resultPanel.setBackground(Color.WHITE);
+	    	                resultPanel.setBackgroundResult("blank");
+    	    			}
+	    	        	  	    		
+	    	    		//JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of 78 letters"));
+	    	    		drawingPanel.clear();
+	    	    		resultPanel.setBackgroundResult("blank");
+	    				//}
+	    	    		activateJFrame();
+	    	    		testLetterButton.setText("Test Letter:");
+	    	    		testLetterButton.setForeground(Color.BLACK);
+	    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));	    	    		
+	    			
+					}
+				}).start();
+				
+			}
+		});
     	
     	testAllLettersButton.addActionListener(new ActionListener() {
 			
@@ -233,6 +331,10 @@ public class MainGui extends JFrame {
 	    	    		
 	    	    		boolean wrong = false;
 	    	    		for(int i = 0; i < 26; i++) {
+	    	    			
+	    	    			testAllLettersButton.setText("Testing Letter [".concat(arrayABC[i]).concat("]"));
+	    	    			testAllLettersButton.setForeground(Color.BLUE);
+	    	    			
 	    	    			int size = networkTrainer.getNumbOfInputsLetter(arrayABC[i]);
 	    	    			for(int j = 0; j < size; j++) {
 		    	                drawingPanel.drawLetter(networkTrainer.getInputFromLetter(arrayABC[i], j));
@@ -274,6 +376,8 @@ public class MainGui extends JFrame {
 	    	    		resultPanel.setBackgroundResult("blank");
 	    				//}
 	    	    		activateJFrame();
+	    	    		testAllLettersButton.setText("Test All Letters");
+    	    			testAllLettersButton.setForeground(Color.BLACK);
 	    				JOptionPane.showMessageDialog(null, "The program recognized ".concat(correctRecognitions + " of " + totalTrys + " letters"));
 	    	    		
 	    			}
