@@ -1,6 +1,6 @@
-##Handwriting Recognition using Machine Learning
+## Handwriting Recognition using Machine Learning
 
-#A single Fully-Connected Neural Network with softmax activation function implemented in Java
+# A single Fully-Connected Neural Network with softmax activation function implemented in Java
 
 The images' pixels are simulated by squares in which the user draws the letter for prediction as seen below:
 
